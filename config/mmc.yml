@@ -78,8 +78,8 @@ raster_db:
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [0.50]
-  p_treatment_for_more_than_5_by_location: [0.50]
+  p_treatment_for_less_than_5_by_location: [0.30]
+  p_treatment_for_more_than_5_by_location: [0.30]
 
   #transmission intensity
   #if the number of values less than number of locations, the first value will be applied for all locations
@@ -88,10 +88,10 @@ raster_db:
 # seasonality parameters for all location
 seasonal_info:
   enable: false
+  base: [1]
   a: [1]
-  phi: [250]
-  min_value: [0.1]
-  period: 365
+  b: [2]
+  phi: [0]
 
 spatial_model:
   name: "Wesolowski"
@@ -345,22 +345,8 @@ initial_parasite_info:
 #               to intermediate concentrations, and then decreases linearly from intermediate concentrations to zero
 #
 drug_db:
-  0: 
-    name: "generic"
-    half_life: 7
-    maximum_parasite_killing_rate: 0.8
-    n: 15
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.0
-    affecting_loci: [3]
-    selecting_alleles: [[1]]
-    resistant_factor: [[1]]
-    k: 4
-    EC50:
-      ...0.: 0.58
-      ...1.: 1.4
-  1:
-    name: "artmisinin"
+  0:
+    name: "ART"       # Artemisinin
     half_life: 0.0
     maximum_parasite_killing_rate: 0.999
     n: 25
@@ -372,52 +358,22 @@ drug_db:
     EC50:
       ..0..: 0.75
       ..1..: 1.2
-  2:
-    name: "lumefantrine"
-    half_life: 4.5
-    maximum_parasite_killing_rate: 0.99
-    n: 20
+  1:
+    name: "PQ"        # Piperaquine
+    half_life: 28.0
+    maximum_parasite_killing_rate: 0.9
+    n: 15
     age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
     mutation_probability: 0.005
-    affecting_loci: [0,1]
-    selecting_alleles: [[0],[0,2,3,4,6,7]]
+    affecting_loci: [3]
+    selecting_alleles: [[1]]
+    resistant_factor: [[1]]
     k: 4
     EC50:
-      #KNY--
-      00...: 0.8
-      #KYY--
-      01...: 0.67
-      #KNF--
-      02...: 0.9
-      #KYF--
-      03...: 0.8
-      #KNYNY
-      04...: 1.0
-      #KYYYY
-      05...: 0.87
-      #KNFNF
-      06...: 1.1
-      #KYFYF
-      07...: 1.0
-      #TNY--
-      10...: 0.75
-      #TYY--
-      11...: 0.6
-      #TNF--
-      12...: 0.85
-      #TYF--
-      13...: 0.75
-      #TNYNY
-      14...: 0.95
-      #TYYNY
-      15...: 0.8
-      #TNFNF
-      16...: 1.05
-      #TYFYF
-      17...: 0.95
+      ...0.: 0.58
+      ...1.: 1.4
 
-lumefantrine_drug_id: 2
-artemisinin_drug_id: 1
+artemisinin_drug_id: 0
 
 # therapy info
 # the drug_ids that make up the therapy, and the number of days that the therapy is prescribed for 
@@ -425,9 +381,9 @@ artemisinin_drug_id: 1
 tf_testing_day: 28
 
 therapy_db:
-  # Generic
+  # ACT - Dihydroartemisinin-piperaquine (DP)
   0:
-    drug_id: [0]
+    drug_id: [0, 1]
     dosing_days: [3]
 
 # drug-deployment strategy - simply uncomment below to turn on a particular strategy

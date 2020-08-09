@@ -1,17 +1,18 @@
 #!/bin/bash
 
-LIMIT=0
-TREATMENT=
+# The number to limit the processes to
+LIMIT=90
 
-# 0.001 0.001 0.009
-# 0.01 0.01 0.5
-# 0.6  0.1  1.0
-# 1.25 0.25 3.0
-
-for i in 0.00925 0.0095 0.00975;
+for i in `seq 0.01 0.01 1.25`;
 do
-  sed 's/#BETA#/'"$i"'/g' mmc.yml > mmc-pr-treat-0.55-$i.yml
-  sed 's/#BETA#/'"$i"'/g' template.job > 0.55-$i.pbs
-  qsub 0.55-$i.pbs
-done
+  # Get the current job count, note the overcount due to the delay.
+  # Wait if there are currently too many jobs
+  while [ `qstat -u rbz5100 | grep rbz5100 | wc -l` -gt $LIMIT ]
+  do
+    sleep 10s
+  done
 
+  sed 's/#BETA#/'"$i"'/g' mmc.yml > mmc-0.30-$i.yml
+  sed 's/#BETA#/'"$i"'/g' template.job > 0.30-$i.pbs
+  qsub 0.30-$i.pbs
+done
