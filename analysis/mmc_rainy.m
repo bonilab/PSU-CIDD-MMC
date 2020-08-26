@@ -5,6 +5,7 @@ addpath('include');
 clear;
 
 hold on;
+
 labels = {};
 
 labels{end + 1} = plot_rainy('data/mmc-ii-rainy.csv');
@@ -33,12 +34,26 @@ function [label] = plot_rainy(filename)
         if size(data(data(:, BETA) == beta, PFPR), 1) < 3
             continue;
         end
+        
+        % First pass to find the peaks
         peaks = findpeaks(data(data(:, BETA) == beta, PFPR));
+        
+        % Discard empty data sets
+        if size(max(peaks), 1) == 0
+            continue;
+        end
+        
+        % Second pass to find the peaks, this will exclude local maxima
+        peaks = findpeaks(peaks);
+        
         pfpr(index) = mean(peaks);
         eir(index) = log10(mean(data(data(:, BETA) == beta, EIR)));
         index = index + 1;
     end
-    scatter(eir, pfpr, 'filled');    
+    scatter(eir, pfpr, 'filled');
+    
+    writematrix([eir; pfpr]', 'mmc-rain.csv');
+    
 	label = "Seasonal Variation";
 end
 

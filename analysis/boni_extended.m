@@ -5,17 +5,45 @@
 addpath('include');
 clear;
 
-% Plot the rainy plots, these will automatically format themselves
-plot_rainy('data/boni-extended-rainy.csv');
+comparison();
 
-% Plot the steady-state plot
-subplot(3, 2, 6);
-hold on;
-label = plot_steady('data/mmc-ii.csv');
-plot_liturature();
-format_axis();
-title(label, 'fontsize', 24);
-hold off;
+
+function [] = comparison()
+    % Plot the rainy plots, these will automatically format themselves
+    plot_rainy('data/boni-extended-rainy.csv');
+
+    % Plot the steady-state plot
+    subplot(3, 2, 6);
+    hold on;
+    label = plot_steady('data/mmc-ii.csv');
+    plot_liturature();
+    format_axis();
+    title(label, 'fontsize', 24);
+    hold off;
+end
+
+% Work in progress - plots the peaks and demonstrates that local maxima
+% were being picked up which was skewing the reuslts
+function [] = working()
+    DATES = 2; BASE = 3; BETA = 4; EIR = 5; PFPR = 7;
+    raw = csvread('data/boni-extended-rainy.csv', 1, 0);
+    dates = unique(raw(:, DATES));
+    bases = unique(raw(:, BASE));
+    betas = unique(raw(:, BETA));
+
+    base = 0.5;
+    data = raw(raw(:, BASE) == base, :);
+
+    spi = 1;
+    for beta = transpose(betas)
+        subplot(5, 40, spi);
+        filtered = data(data(:, BETA) == beta, :);
+    %    plot(filtered(:, DATES), filtered(:, PFPR));
+        findpeaks(filtered(:, PFPR));
+        title(sprintf("%g", beta));
+        spi = spi + 1;
+    end
+end
 
 function [] = plot_rainy(filename)
     BASE = 3; BETA = 4; EIR = 5; PFPR = 7;
@@ -43,7 +71,15 @@ function [] = plot_rainy(filename)
             if size(data(data(:, BETA) == beta, PFPR), 1) < 3
                 continue;
             end
+            
             peaks = findpeaks(data(data(:, BETA) == beta, PFPR));
+            
+            % Discard empty data sets
+            if size(max(peaks), 1) == 0
+                continue;
+            end
+            
+            peaks = findpeaks(peaks);
             pfpr(index) = mean(peaks);
             eir(index) = log10(mean(data(data(:, BETA) == beta, EIR)));
             index = index + 1;
@@ -58,6 +94,4 @@ function [] = plot_rainy(filename)
         % Move to the next subplot
         spi = spi + 1;
     end
-    
-
 end
