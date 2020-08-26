@@ -1,0 +1,10 @@
+% boni_extended.m
+%
+% Analysis script to compare various base variable parameters, in tamdum
+% with the MMC work that is being conducted.
+clear;
+
+hold on;
+
+plot_liturature();
+hold off;
