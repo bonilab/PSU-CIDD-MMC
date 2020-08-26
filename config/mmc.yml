@@ -88,7 +88,7 @@ raster_db:
 # seasonality parameters for all location
 seasonal_info:
   enable: false
-  base: [1]
+  base: [#BASE#]
   a: [1]
   b: [2]
   phi: [0]
